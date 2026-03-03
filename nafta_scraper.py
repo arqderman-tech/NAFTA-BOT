@@ -1,11 +1,9 @@
-"""
-nafta_scraper.py - NAFTABOT
-Descarga el CSV oficial de precios en surtidor del gobierno argentino,
-consolida el historico diario y genera los JSONs para el dashboard.
-"""
 import pandas as pd, requests, io, os, json
+import urllib3
 from datetime import datetime
 from pathlib import Path
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 URL_CSV = "https://datos.energia.gob.ar/dataset/1c181390-5045-475e-94dc-410429be4b17/resource/80ac25de-a44a-4445-9215-090cf55cfda5/download/precios-en-surtidor-resolucin-3142016.csv"
 DOLAR_URL = "https://api.comparadolar.ar/usd"
@@ -25,7 +23,7 @@ def obtener_dolar():
 
 def descargar_csv():
     print("Descargando CSV oficial...")
-    r = requests.get(URL_CSV, timeout=60)
+    r = requests.get(URL_CSV, timeout=60, verify=False)
     r.raise_for_status()
     df = pd.read_csv(io.BytesIO(r.content), decimal=",", encoding="utf-8", low_memory=False)
     print("  Columnas: " + str(list(df.columns)))
@@ -40,7 +38,6 @@ def limpiar(df):
     df["precio"] = pd.to_numeric(df["precio"], errors="coerce")
     df["fecha_vigencia"] = pd.to_datetime(df["fecha_vigencia"], errors="coerce")
     df = df.dropna(subset=["precio","fecha_vigencia"])
-    # solo columnas que necesitamos
     cols = [c for c in COLS_KEEP if c in df.columns]
     return df[cols].copy()
 
@@ -52,7 +49,6 @@ def consolidar(df_nuevo, hoy, dolar):
     if HISTORICO.exists():
         dh = pd.read_csv(HISTORICO, low_memory=False)
         dh["fecha_descarga"] = pd.to_datetime(dh["fecha_descarga"]).dt.strftime("%Y-%m-%d")
-        # no duplicar el dia de hoy
         dh = dh[dh["fecha_descarga"] != hoy]
         df_final = pd.concat([dh, df_nuevo], ignore_index=True)
     else:
@@ -63,7 +59,6 @@ def consolidar(df_nuevo, hoy, dolar):
     return df_final
 
 def generar_filtros(df):
-    """Genera el JSON de opciones para los filtros del frontend."""
     hoy_df = df[df["fecha_descarga"] == df["fecha_descarga"].max()]
     filtros = {
         "provincias":  sorted(hoy_df["provincia"].dropna().unique().tolist()),
@@ -76,16 +71,12 @@ def generar_filtros(df):
     print("filtros.json ok")
 
 def generar_stats(df):
-    """Genera stats_full.json: para cada combinacion provincia+producto+empresa
-    guarda la serie historica de precios."""
     df2 = df.copy()
     df2["fecha_descarga"] = pd.to_datetime(df2["fecha_descarga"]).dt.strftime("%Y-%m-%d")
 
-    # precio promedio por dia+provincia+empresabandera+producto
     grp = df2.groupby(["fecha_descarga","provincia","localidad","empresabandera","producto"])["precio"].mean().reset_index()
     grp["precio"] = grp["precio"].round(2)
 
-    # convertir a estructura anidada: {provincia: {producto: {empresa: [{fecha, precio}]}}}
     stats = {}
     for _, row in grp.iterrows():
         prov = row["provincia"]
@@ -102,18 +93,15 @@ def generar_stats(df):
     print("stats.json ok - " + str(len(stats)) + " provincias")
 
 def generar_resumen(df, dolar):
-    """Genera resumen.json con stats globales del ultimo dia."""
     df2 = df.copy()
     df2["fecha_descarga"] = pd.to_datetime(df2["fecha_descarga"]).dt.strftime("%Y-%m-%d")
     ultima_fecha = df2["fecha_descarga"].max()
     df_hoy = df2[df2["fecha_descarga"] == ultima_fecha]
 
-    # precio promedio por producto hoy
     por_producto = df_hoy.groupby("producto")["precio"].mean().round(2).to_dict()
 
-    # variacion respecto al dia anterior
-    fechas = sorted(df2["fecha_descarga"].unique())
     variaciones = {}
+    fechas = sorted(df2["fecha_descarga"].unique())
     if len(fechas) >= 2:
         fecha_ant = fechas[-2]
         df_ant = df2[df2["fecha_descarga"] == fecha_ant]
