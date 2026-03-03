@@ -41,13 +41,17 @@ def limpiar(df):
     return df[cols].copy()
 
 def get_vigentes(df):
-    """Precio mas reciente por estacion+producto."""
-    df_sorted = df.sort_values("fecha_vigencia", ascending=False)
+    """Precio mas reciente por estacion+producto, solo desde 2026."""
+    df_2026 = df[df["fecha_vigencia"].dt.year >= 2026].copy()
+    if df_2026.empty:
+        print("  Sin datos de 2026, usando todos los disponibles")
+        df_2026 = df.copy()
+    df_sorted = df_2026.sort_values("fecha_vigencia", ascending=False)
     vigentes = df_sorted.groupby(
         ["provincia","localidad","empresa","empresabandera","producto"],
         as_index=False
     ).first()
-    print("  Estaciones vigentes: " + str(len(vigentes)))
+    print("  Estaciones vigentes (2026+): " + str(len(vigentes)))
     return vigentes
 
 def consolidar(df_vigentes, hoy, dolar):
@@ -67,17 +71,15 @@ def consolidar(df_vigentes, hoy, dolar):
     return df_final
 
 def generar_filtros(df_vigentes):
-    # Localidades agrupadas por provincia para filtro en cascada
     locs_por_prov = {}
     for prov, grp in df_vigentes.groupby("provincia"):
         locs_por_prov[prov] = sorted(grp["localidad"].dropna().unique().tolist())
-
     filtros = {
-        "provincias":               sorted(df_vigentes["provincia"].dropna().unique().tolist()),
-        "localidades":              sorted(df_vigentes["localidad"].dropna().unique().tolist()),
+        "provincias":                sorted(df_vigentes["provincia"].dropna().unique().tolist()),
+        "localidades":               sorted(df_vigentes["localidad"].dropna().unique().tolist()),
         "localidades_por_provincia": locs_por_prov,
-        "empresas":                 sorted(df_vigentes["empresabandera"].dropna().unique().tolist()),
-        "productos":                sorted(df_vigentes["producto"].dropna().unique().tolist()),
+        "empresas":                  sorted(df_vigentes["empresabandera"].dropna().unique().tolist()),
+        "productos":                 sorted(df_vigentes["producto"].dropna().unique().tolist()),
     }
     (DIR_DATA / "filtros.json").write_text(
         json.dumps(filtros, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -85,11 +87,9 @@ def generar_filtros(df_vigentes):
           str(len(filtros["localidades"])) + " localidades")
 
 def generar_vigentes(df_vigentes, df_hist, dolar):
-    """JSON liviano: precios vigentes + variacion respecto al dia anterior."""
     df2 = df_hist.copy()
     df2["fecha_descarga"] = pd.to_datetime(df2["fecha_descarga"]).dt.strftime("%Y-%m-%d")
     fechas = sorted(df2["fecha_descarga"].unique())
-
     precios_ant = {}
     if len(fechas) >= 2:
         df_ant = df2[df2["fecha_descarga"] == fechas[-2]]
@@ -97,7 +97,6 @@ def generar_vigentes(df_vigentes, df_hist, dolar):
             key = (str(row["provincia"]) + "|" + str(row["localidad"]) + "|" +
                    str(row.get("empresabandera","")) + "|" + str(row["producto"]))
             precios_ant[key] = float(row["precio"])
-
     rows = []
     for _, row in df_vigentes.iterrows():
         key = (str(row["provincia"]) + "|" + str(row["localidad"]) + "|" +
@@ -114,14 +113,13 @@ def generar_vigentes(df_vigentes, df_hist, dolar):
             "precio":         precio,
             "precio_usd":     round(precio / dolar, 2),
             "var_dia":        var_dia,
+            "fecha_vigencia": str(row["fecha_vigencia"])[:10],
         })
-
     (DIR_DATA / "vigentes.json").write_text(
         json.dumps(rows, ensure_ascii=False, separators=(",",":")), encoding="utf-8")
     print("vigentes.json ok - " + str(len(rows)) + " registros")
 
 def generar_stats(df_hist):
-    """Serie historica diaria por provincia+producto+empresa."""
     df2 = df_hist.copy()
     df2["fecha_descarga"] = pd.to_datetime(df2["fecha_descarga"]).dt.strftime("%Y-%m-%d")
     grp = df2.groupby(
@@ -179,24 +177,19 @@ def main():
     dolar = obtener_dolar()
     print("Dolar BN: " + str(dolar))
     hoy = datetime.now().strftime("%Y-%m-%d")
-
     try:
         df_raw = descargar_csv()
     except Exception as e:
         print("Error descarga: " + str(e)); return
-
     df = limpiar(df_raw)
     print("Registros limpios: " + str(len(df)))
-
     df_vigentes = get_vigentes(df)
     df_hist = consolidar(df_vigentes, hoy, dolar)
     df_hist["fecha_descarga"] = pd.to_datetime(df_hist["fecha_descarga"]).dt.strftime("%Y-%m-%d")
-
     generar_filtros(df_vigentes)
     generar_vigentes(df_vigentes, df_hist, dolar)
     generar_stats(df_hist)
     generar_resumen(df_vigentes, df_hist, dolar, hoy)
-
     print("NAFTABOT ok - " + str(datetime.now()))
 
 if __name__ == "__main__":
