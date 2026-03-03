@@ -8,7 +8,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 URL_CSV   = "https://datos.energia.gob.ar/dataset/1c181390-5045-475e-94dc-410429be4b17/resource/80ac25de-a44a-4445-9215-090cf55cfda5/download/precios-en-surtidor-resolucin-3142016.csv"
 DOLAR_URL = "https://api.comparadolar.ar/usd"
 HISTORICO = Path("docs/data/historico.csv")
-DIR_DATA = Path("docs/data")
+DIR_DATA.mkdir(parents=True, exist_ok=True)
 DIR_DATA.mkdir(exist_ok=True)
 
 COLS_KEEP = ["fecha_vigencia","provincia","localidad","empresa","empresabandera","producto","precio"]
