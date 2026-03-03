@@ -13,6 +13,11 @@ DIR_DATA.mkdir(parents=True, exist_ok=True)
 
 COLS_KEEP = ["fecha_vigencia","provincia","localidad","empresa","empresabandera","producto","precio"]
 
+PRECIOS_MINIMOS = {
+    "gnc": 400,
+    "default": 1500,
+}
+
 def obtener_dolar():
     try:
         bn = next((x for x in requests.get(DOLAR_URL, timeout=10).json()
@@ -41,17 +46,26 @@ def limpiar(df):
     return df[cols].copy()
 
 def get_vigentes(df):
-    """Precio mas reciente por estacion+producto, solo desde 2026."""
+    """Precio mas reciente por estacion+producto, solo desde 2026, con filtro de precios validos."""
     df_2026 = df[df["fecha_vigencia"].dt.year >= 2026].copy()
     if df_2026.empty:
         print("  Sin datos de 2026, usando todos los disponibles")
         df_2026 = df.copy()
+
+    def precio_valido(row):
+        prod = str(row["producto"]).lower()
+        minimo = PRECIOS_MINIMOS["gnc"] if "gnc" in prod else PRECIOS_MINIMOS["default"]
+        return row["precio"] >= minimo
+
+    df_2026 = df_2026[df_2026.apply(precio_valido, axis=1)].copy()
+    print("  Registros validos 2026+: " + str(len(df_2026)))
+
     df_sorted = df_2026.sort_values("fecha_vigencia", ascending=False)
     vigentes = df_sorted.groupby(
         ["provincia","localidad","empresa","empresabandera","producto"],
         as_index=False
     ).first()
-    print("  Estaciones vigentes (2026+): " + str(len(vigentes)))
+    print("  Estaciones vigentes: " + str(len(vigentes)))
     return vigentes
 
 def consolidar(df_vigentes, hoy, dolar):
