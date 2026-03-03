@@ -220,7 +220,18 @@ poblarSelect('sel-emp',  FILTROS.empresas  ||[], 'Todas');
 poblarSelect('sel-loc',  FILTROS.localidades||[],'Todas');
 
 function onProvChange() {{
-  // podria filtrar localidades — por ahora muestra todas
+  const prov = document.getElementById('sel-prov').value;
+  const selLoc = document.getElementById('sel-loc');
+  selLoc.innerHTML = '<option value="">Todas</option>';
+  let locs = FILTROS.localidades || [];
+  if (prov && FILTROS.localidades_por_provincia && FILTROS.localidades_por_provincia[prov]) {{
+    locs = FILTROS.localidades_por_provincia[prov];
+  }}
+  locs.forEach(o => {{
+    const op = document.createElement('option');
+    op.value = o; op.textContent = o;
+    selLoc.appendChild(op);
+  }});
 }}
 function resetFiltros() {{
   ['sel-prov','sel-loc','sel-prod','sel-emp'].forEach(id=>document.getElementById(id).value='');
