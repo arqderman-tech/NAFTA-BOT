@@ -1,0 +1,31 @@
+name: NAFTABOT – Monitor Diario
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: naftabot
+  cancel-in-progress: true
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependencias
+        run: pip install requests pandas
+      - name: Descargar y procesar
+        run: python nafta_scraper.py
+      - name: Generar web
+        run: python generar_web.py
+      - name: Commit y push
+        run: |
+          git config user.name "naftabot"
+          git config user.email "bot@naftabot.github.io"
+          git add -A
+          git diff --cached --quiet || git commit -m "⛽ Update $(date +'%Y-%m-%d')"
+          git push
