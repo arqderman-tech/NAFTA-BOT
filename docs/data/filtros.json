@@ -359,6 +359,7 @@
     "RIO TERCERO",
     "RIO TURBIO",
     "RIVADAVIA",
+    "RODEO DE LA CRUZ",
     "ROLDAN",
     "ROQUE PEREZ",
     "ROSARIO",
@@ -472,6 +473,7 @@
     "VILLA MARIA",
     "VILLA MARTELLI",
     "VILLA MINETTI",
+    "VILLA NUEVA",
     "VILLA REDUCCION",
     "VILLA REGINA",
     "VILLA SARMIENTO",
@@ -859,9 +861,11 @@
       "LUJAN DE CUYO",
       "MENDOZA",
       "RIVADAVIA",
+      "RODEO DE LA CRUZ",
       "SAN MARTIN",
       "SAN RAFAEL",
-      "TUNUYAN"
+      "TUNUYAN",
+      "VILLA NUEVA"
     ],
     "MISIONES": [
       "CAPIOVI",
