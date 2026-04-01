@@ -360,6 +360,7 @@
     "RIO CEBALLOS",
     "RIO CUARTO",
     "RIO GRANDE",
+    "RIO HONDO",
     "RIO PRIMERO",
     "RIO SEGUNDO",
     "RIO TALA",
@@ -497,7 +498,8 @@
     "WANDA",
     "WILDE",
     "YERBA BUENA",
-    "ZARATE"
+    "ZARATE",
+    "ZENON PEREYRA"
   ],
   "localidades_por_provincia": {
     "BUENOS AIRES": [
@@ -1007,7 +1009,8 @@
       "VILLA CAÑAS",
       "VILLA CONSTITUCION",
       "VILLA GOBERNADOR GALVEZ",
-      "VILLA MINETTI"
+      "VILLA MINETTI",
+      "ZENON PEREYRA"
     ],
     "SANTIAGO DEL ESTERO": [
       "COLONIA DORA",
@@ -1015,6 +1018,7 @@
       "FRIAS",
       "LA BANDA",
       "QUIMILI",
+      "RIO HONDO",
       "SANTIAGO DEL ESTERO",
       "SGO. DEL ESTERO"
     ],
