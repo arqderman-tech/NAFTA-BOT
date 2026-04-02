@@ -42,6 +42,7 @@
     "ALEJO LEDESMA",
     "ALICIA",
     "ALLEN",
+    "ALMAFUERTE",
     "ALTA GRACIA",
     "AMEGHINO",
     "ARATA",
@@ -54,6 +55,7 @@
     "AVELLANEDA",
     "AYACUCHO",
     "AZUL",
+    "AÑATUYA",
     "AÑELO",
     "BAHIA BLANCA",
     "BALCARCE",
@@ -450,6 +452,7 @@
     "TREVELIN",
     "TRISTAN SUAREZ",
     "TUNUYAN",
+    "TUPUNGATO",
     "TURDERA",
     "URDINARRAIN",
     "VALENTIN ALSINA",
@@ -731,6 +734,7 @@
     "CORDOBA": [
       "ALEJO LEDESMA",
       "ALICIA",
+      "ALMAFUERTE",
       "ALTA GRACIA",
       "ARGUELLO",
       "ARROYITO",
@@ -892,6 +896,7 @@
       "SAN MARTIN",
       "SAN RAFAEL",
       "TUNUYAN",
+      "TUPUNGATO",
       "VILLA LA PAZ",
       "VILLA NUEVA"
     ],
@@ -1013,6 +1018,7 @@
       "ZENON PEREYRA"
     ],
     "SANTIAGO DEL ESTERO": [
+      "AÑATUYA",
       "COLONIA DORA",
       "FERNANDEZ",
       "FRIAS",
