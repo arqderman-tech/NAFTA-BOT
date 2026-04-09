@@ -47,6 +47,7 @@
     "AMEGHINO",
     "ARATA",
     "ARGUELLO",
+    "AROCENA",
     "ARRECIFES",
     "ARRIBEÑOS",
     "ARROYITO",
@@ -389,6 +390,7 @@
     "SAN ANTONIO DE PADUA",
     "SAN CARLOS CENTRO",
     "SAN CARLOS DE BARILOCHE",
+    "SAN CARLOS NORTE",
     "SAN CARLOS SUD",
     "SAN CAYETANO",
     "SAN COSME",
@@ -967,6 +969,7 @@
       "RIO TURBIO"
     ],
     "SANTA FE": [
+      "AROCENA",
       "ARROYO SECO",
       "BARRANCAS",
       "CASILDA",
@@ -1005,6 +1008,7 @@
       "ROLDAN",
       "ROSARIO",
       "SAN CARLOS CENTRO",
+      "SAN CARLOS NORTE",
       "SAN CARLOS SUD",
       "SAN CRISTOBAL",
       "SAN JERONIMO",
