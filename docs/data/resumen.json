@@ -1,21 +1,21 @@
 {
-  "fecha_actualizacion": "2026-05-24",
+  "fecha_actualizacion": "2026-05-25",
   "dolar_bn": 1425.0,
   "total_registros": 4280,
   "total_estaciones": 1201,
   "precios_promedio": {
-    "GNC": 802.82,
-    "Gas Oil Grado 2": 2235.5,
+    "GNC": 803.07,
+    "Gas Oil Grado 2": 2235.51,
     "Gas Oil Grado 3": 2454.01,
-    "Nafta (premium) de más de 95 Ron": 2343.57,
-    "Nafta (súper) entre 92 y 95 Ron": 2085.11
+    "Nafta (premium) de más de 95 Ron": 2343.61,
+    "Nafta (súper) entre 92 y 95 Ron": 2086.23
   },
   "variaciones_dia": {
-    "GNC": 0.06,
-    "Gas Oil Grado 2": 0.02,
-    "Gas Oil Grado 3": 0.03,
-    "Nafta (premium) de más de 95 Ron": 0.05,
-    "Nafta (súper) entre 92 y 95 Ron": -0.02
+    "GNC": 0.03,
+    "Gas Oil Grado 2": 0.0,
+    "Gas Oil Grado 3": 0.0,
+    "Nafta (premium) de más de 95 Ron": 0.0,
+    "Nafta (súper) entre 92 y 95 Ron": 0.05
   },
   "provincias_count": 24,
   "empresas_count": 9
